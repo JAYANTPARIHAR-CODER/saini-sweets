@@ -5,7 +5,6 @@ import { Star, Gift, Leaf, ChefHat, Droplets } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import shopNight from "@/assets/shop-night.jpg";
 import chaatDish from "@/assets/chaat-dish.jpg";
-import kajuKatli from "@/assets/kaju_katli.jpg";
 import gulabs from "@/assets/gulab.jpg";
 
 
@@ -52,7 +51,7 @@ const StatItem = ({ value, suffix, label }: { value: number; suffix: string; lab
 };
 
 const featuredItems = [
-  { name: "Kaju Katli", desc: "Premium cashew fudge with silver leaf", price: "₹80/100g", img: kajuKatli },
+  { name: "Kaju Katli", desc: "Premium cashew fudge with silver leaf", price: "₹80/100g", img: ""},
   { name: "Papri Chaat", desc: "Crispy papri with yogurt & chutneys", price: "₹55", img: chaatDish },
   { name: "Gulab Jamun", desc: "Soft milk dumplings in rose syrup", price: "₹12/pc", img: gulabs },
 ];
@@ -176,7 +175,7 @@ const Index = () => {
                 <div className="bg-card gold-border rounded-xl overflow-hidden hover-lift">
                   <div className="h-48 overflow-hidden">
                     {item.img ? (
-                      <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
+                      <img src={item.img || "https://via.placeholder.com/300" } alt={item.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full gradient-placeholder" />
                     )}
