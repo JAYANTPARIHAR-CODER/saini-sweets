@@ -5,7 +5,7 @@ import { Star, Gift, Leaf, ChefHat, Droplets } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import shopNight from "@/assets/shop-night.jpg";
 import chaatDish from "@/assets/chaat-dish.jpg";
-import kajuKatli from "@/assets/kaju_katli.jpg";
+import kajuKatli from "@/assets/Kaju_Katli.jpg";
 import gulabs from "@/assets/gulab.jpg";
 
 
