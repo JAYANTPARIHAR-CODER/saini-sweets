@@ -3,7 +3,7 @@ import axios from 'axios';
 // This is the base URL of your backend
 // Instead of typing full URL every time, we set it once here
 const API = axios.create({
-    baseURL: 'http://localhost:5000/api'
+    baseURL: 'https://saini-sweets-backend.onrender.com/api'
 });
 
 // Products
