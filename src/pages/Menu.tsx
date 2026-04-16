@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageHero from "@/components/PageHero";
 import { getProducts } from "@/api/index";  // ← our axios function
@@ -20,6 +20,7 @@ interface Product {
 }
 
 const MenuPage = () => {
+  const navigate = useNavigate();
   const [active, setActive] = useState("ALL");
 
   // -----------------------------------------------
@@ -127,12 +128,22 @@ const MenuPage = () => {
                   <p className="font-body text-sm text-muted-foreground mt-1">{item.description}</p>
                   <div className="flex items-center justify-between mt-4">
                     <span className="font-display text-lg font-bold text-primary">₹{item.price}</span>
-                    <Link
-                      to="/order"
+                    <button
+                      onClick={() =>
+                        navigate("/order", {
+                          state: {
+                            addItem: {
+                              id: item._id,
+                              name: item.name,
+                              price: `₹${item.price}`,
+                            },
+                          },
+                        })
+                      }
                       className="bg-primary text-primary-foreground font-body text-sm px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
                     >
                       Add to Cart
-                    </Link>
+                    </button>
                   </div>
                 </div>
               ))}

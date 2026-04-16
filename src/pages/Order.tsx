@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, ShoppingCart, Check } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { placeOrder } from "@/api/index"; // ← add this
 import PageHero from "@/components/PageHero";
 import { menuItems, categories } from "@/data/menuItems";
+import { useLocation } from "react-router-dom";
 
 interface CartItem {
   id: string;
@@ -14,11 +15,22 @@ interface CartItem {
 }
 
 const Order = () => {
+  const location = useLocation();
   const [active, setActive] = useState("ALL");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [form, setForm] = useState({ name: "", phone: "", address: "", delivery: true, notes: "" });
   const [success, setSuccess] = useState(false);
   const [showCart, setShowCart] = useState(false);
+
+  // Pre-add item passed from Menu page via router state
+  useEffect(() => {
+    const incoming = (location.state as any)?.addItem;
+    if (incoming) {
+      setCart([{ id: incoming.id, name: incoming.name, price: incoming.price, qty: 1 }]);
+      // Clear the state so refreshing doesn't re-add it
+      window.history.replaceState({}, document.title);
+    }
+  }, []);
 
   const filtered = active === "ALL" ? menuItems : menuItems.filter((m) => m.category === active);
 
