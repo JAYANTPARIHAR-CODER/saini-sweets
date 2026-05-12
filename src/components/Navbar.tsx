@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, UserCircle2, LogOut, ChevronDown } from "lucide-react";
+import { Menu, X, UserCircle2, LogOut, ChevronDown, ShoppingCart } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import CartDrawer from "@/components/CartDrawer";
 
 const NAV_LINKS = [
   { to: "/", label: "Home" },
@@ -15,9 +17,11 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { totalItems } = useCart();
 
   // Read user from localStorage whenever route changes
   useEffect(() => {
@@ -63,6 +67,7 @@ const Navbar = () => {
       .slice(0, 2);
 
   return (
+    <>
     <nav className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${scrolled ? "bg-footer-bg/95 backdrop-blur-md shadow-lg" : "bg-transparent"}`}>
       <div className="container mx-auto flex items-center justify-between py-4 px-4">
         <Link to="/" className="flex items-center gap-2">
@@ -89,12 +94,29 @@ const Navbar = () => {
           ))}
 
           {/* Order Now button */}
-          <Link
-            to="/order"
+          <button
+            onClick={() => navigate(localStorage.getItem("token") || localStorage.getItem("google_token") ? "/order" : "/auth")}
             className="bg-primary hover:bg-primary/90 text-primary-foreground font-body text-sm font-semibold px-5 py-2.5 rounded-lg transition-all duration-200"
           >
             Order Now
-          </Link>
+          </button>
+
+          {/* Cart icon */}
+          <button
+            onClick={() => setCartOpen(true)}
+            className="relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 hover:bg-white/10"
+            aria-label="Open cart"
+          >
+            <ShoppingCart className="w-5 h-5 text-primary-foreground" />
+            {totalItems > 0 && (
+              <span
+                className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-white text-xs font-bold flex items-center justify-center"
+                style={{ background: "#c9972c", fontSize: 10 }}
+              >
+                {totalItems > 9 ? "9+" : totalItems}
+              </span>
+            )}
+          </button>
 
           {/* ── User avatar / Sign In ── */}
           {userName ? (
@@ -246,12 +268,12 @@ const Navbar = () => {
                 {l.label}
               </Link>
             ))}
-            <Link
-              to="/order"
-              className="bg-primary text-primary-foreground font-body text-sm font-semibold px-5 py-3 rounded-lg text-center mt-2"
+            <button
+              onClick={() => navigate(localStorage.getItem("token") || localStorage.getItem("google_token") ? "/order" : "/auth")}
+              className="bg-primary text-primary-foreground font-body text-sm font-semibold px-5 py-3 rounded-lg text-center mt-2 w-full"
             >
               Order Now
-            </Link>
+            </button>
             {userName ? (
               <div className="flex items-center justify-between mt-1 pt-3 border-t border-secondary/20">
                 <div className="flex items-center gap-2">
@@ -291,7 +313,8 @@ const Navbar = () => {
         </div>
       )}
     </nav>
-  );
+    <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+  </>);
 };
 
 export default Navbar;

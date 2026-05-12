@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, ShoppingCart, Check } from "lucide-react";
-import AnimatedSection from "@/components/AnimatedSection";
-import { placeOrder } from "@/api/index"; // ← add this
+import { placeOrder } from "@/api/index";
 import PageHero from "@/components/PageHero";
 import { menuItems, categories } from "@/data/menuItems";
 import { useLocation } from "react-router-dom";
+import { useCart } from "@/context/CartContext";
 
 interface CartItem {
   id: string;
@@ -17,38 +17,31 @@ interface CartItem {
 const Order = () => {
   const location = useLocation();
   const [active, setActive] = useState("ALL");
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const { cart, addToCart, updateQty, clearCart, totalItems } = useCart();
   const [form, setForm] = useState({ name: "", phone: "", address: "", delivery: true, notes: "" });
   const [success, setSuccess] = useState(false);
   const [showCart, setShowCart] = useState(false);
+  const checkoutRef = useRef<HTMLDivElement>(null);
 
   // Pre-add item passed from Menu page via router state
   useEffect(() => {
     const incoming = (location.state as any)?.addItem;
     if (incoming) {
-      setCart([{ id: incoming.id, name: incoming.name, price: incoming.price, qty: 1 }]);
-      // Clear the state so refreshing doesn't re-add it
+      addToCart({ id: incoming.id, name: incoming.name, price: incoming.price });
       window.history.replaceState({}, document.title);
     }
   }, []);
 
+  // Auto-scroll to checkout form when coming from CartDrawer
+  useEffect(() => {
+    if ((location.state as any)?.scrollToCheckout && checkoutRef.current) {
+      setTimeout(() => {
+        checkoutRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+    }
+  }, [location.state]);
+
   const filtered = active === "ALL" ? menuItems : menuItems.filter((m) => m.category === active);
-
-  const addToCart = (item: { id: string; name: string; price: string }) => {
-    setCart((prev) => {
-      const existing = prev.find((c) => c.id === item.id);
-      if (existing) return prev.map((c) => (c.id === item.id ? { ...c, qty: c.qty + 1 } : c));
-      return [...prev, { ...item, qty: 1 }];
-    });
-  };
-
-  const updateQty = (id: string, delta: number) => {
-    setCart((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, qty: Math.max(0, c.qty + delta) } : c)).filter((c) => c.qty > 0)
-    );
-  };
-
-  const totalItems = cart.reduce((s, c) => s + c.qty, 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,7 +93,7 @@ const Order = () => {
             <p className="font-body text-sm text-muted-foreground mb-8">
               {form.delivery ? "We'll deliver to your address in Hisar." : "Your order will be ready for pickup."}
             </p>
-            <button onClick={() => { setSuccess(false); setCart([]); setForm({ name: "", phone: "", address: "", delivery: true, notes: "" }); }} className="bg-primary text-primary-foreground font-body font-semibold px-8 py-3 rounded-lg">
+            <button onClick={() => { setSuccess(false); clearCart(); setForm({ name: "", phone: "", address: "", delivery: true, notes: "" }); }} className="bg-primary text-primary-foreground font-body font-semibold px-8 py-3 rounded-lg">
               Place Another Order
             </button>
           </div>
@@ -176,7 +169,7 @@ const Order = () => {
             </div>
 
             {/* Cart - Desktop */}
-            <div className="hidden lg:block">
+            <div className="hidden lg:block" ref={checkoutRef}>
               <div className="sticky top-28">
                 <CartPanel cart={cart} updateQty={updateQty} form={form} setForm={setForm} onSubmit={handleSubmit} />
               </div>
