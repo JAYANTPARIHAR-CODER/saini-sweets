@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 // This is the base URL of your backend
-// In development → uses localhost:5000
-// In production  → uses the Render deployed URL
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// In development → set VITE_API_URL=http://localhost:5000/api in .env
+// In production  → uses the Render deployed URL by default
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://saini-sweets-backend.onrender.com/api';
 
 const API = axios.create({
     baseURL: BASE_URL
