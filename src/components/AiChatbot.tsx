@@ -117,7 +117,7 @@ const AiChatbot = () => {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.85, y: 20 }}
                         transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                        className="fixed bottom-24 right-5 z-50 w-80 sm:w-96 rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+                        className="fixed bottom-40 right-5 z-50 w-80 sm:w-96 rounded-2xl overflow-hidden shadow-2xl flex flex-col"
                         style={{
                             height: "480px",
                             background: "hsl(var(--card))",
@@ -260,7 +260,7 @@ const AiChatbot = () => {
             {/* ── FLOATING BUTTON ───────────────────────────────── */}
             <motion.button
                 onClick={() => setIsOpen(prev => !prev)}
-                className="fixed bottom-5 right-5 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center"
+                className="fixed bottom-24 right-5 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center"
                 style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary)/0.8))" }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
@@ -295,7 +295,7 @@ const AiChatbot = () => {
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 10 }}
-                        className="fixed bottom-7 right-20 z-40 font-body text-xs text-white px-3 py-1.5 rounded-full shadow pointer-events-none"
+                        className="fixed bottom-[6.5rem] right-20 z-40 font-body text-xs text-white px-3 py-1.5 rounded-full shadow pointer-events-none"
                         style={{ background: "hsl(var(--primary)/0.9)" }}
                     >
                         Ask AI 🤖
