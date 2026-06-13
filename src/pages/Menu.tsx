@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageHero from "@/components/PageHero";
+import AiRecommendations from "@/components/AiRecommendations";  // ← AI
 import { getProducts } from "@/api/index";  // ← our axios function
 import menuBoard from "@/assets/menu-board.jpg";
 
@@ -89,6 +90,10 @@ const MenuPage = () => {
 
       <section className="section-padding bg-background">
         <div className="container mx-auto">
+
+          {/* ── AI Recommendations ── */}
+          {/* Shows before the category tabs */}
+          <AiRecommendations />
 
           {/* Tabs — now generated from real categories in DB */}
           <div className="flex flex-wrap justify-center gap-2 mb-10">

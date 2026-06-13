@@ -7,6 +7,7 @@ import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import AiChatbot from "@/components/AiChatbot";  // ← AI chatbot
 import Index from "./pages/Index";
 import About from "./pages/About";
 import MenuPage from "./pages/Menu";
@@ -45,6 +46,7 @@ const App = () => (
         </Routes>
         <Footer />
         <WhatsAppButton />
+        <AiChatbot />        {/* ← Floating AI chatbot on every page */}
       </BrowserRouter>
       </CartProvider>
     </TooltipProvider>

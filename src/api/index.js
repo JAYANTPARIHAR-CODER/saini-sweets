@@ -20,3 +20,12 @@ export const placeOrder = (data) => API.post('/orders', data);
 export const registerUser = (data) => API.post('/users/register', data);
 export const loginUser = (data) => API.post('/users/login', data);
 export const logoutUser = (data) => API.post('/users/logout', data);
+
+// ─── AI Features ─────────────────────────────────────────────
+// Gets 3 sweet recommendations based on current weather + festival
+export const getAIRecommendations = (weather, festival) =>
+    API.get(`/ai/recommendations?weather=${encodeURIComponent(weather)}&festival=${encodeURIComponent(festival)}`);
+
+// Sends a chat message to the AI assistant
+export const sendChatMessage = (message) =>
+    API.post('/ai/chat', { message });
