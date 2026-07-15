@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, ShoppingCart, Check } from "lucide-react";
-import { placeOrder } from "@/api/index";
+import { createPaymentOrder, verifyPayment } from "@/api/index";
 import PageHero from "@/components/PageHero";
 import { menuItems, categories } from "@/data/menuItems";
 import { useLocation } from "react-router-dom";
@@ -13,6 +13,14 @@ interface CartItem {
   price: string;
   qty: number;
 }
+// Extracts the numeric ₹ value from strings like "₹80/100g" or "₹50"
+const parsePrice = (priceStr: string): number => {
+  const match = priceStr.match(/₹(\d+)/);
+  return match ? parseInt(match[1], 10) : 0;
+};
+
+const calculateTotal = (cart: CartItem[]): number =>
+  cart.reduce((sum, item) => sum + parsePrice(item.price) * item.qty, 0);
 
 const Order = () => {
   const location = useLocation();
@@ -44,35 +52,66 @@ const Order = () => {
   const filtered = active === "ALL" ? menuItems : menuItems.filter((m) => m.category === active);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (cart.length === 0) return;
+  e.preventDefault();
+  if (cart.length === 0) return;
 
-    try {
-        // Build the order object to send to backend
-        const orderData = {
+  const totalAmount = calculateTotal(cart);
+
+  try {
+    // Step 1: Ask OUR backend to create a Razorpay order (server-side, using secret key)
+    const { data } = await createPaymentOrder(totalAmount);
+
+    // Step 2: Open the Razorpay popup using the order ID we just got
+    const options = {
+      key: data.keyId,
+      amount: data.amount,
+      currency: data.currency,
+      order_id: data.orderId,
+      name: "Saini Sweets",
+      description: "Order Payment",
+      handler: async (response: any) => {
+        // Step 3: This runs ONLY after a successful payment.
+        // response contains razorpay_order_id, razorpay_payment_id, razorpay_signature
+        try {
+          const orderData = {
             customerName: form.name,
             customerPhone: form.phone,
             deliveryAddress: form.delivery ? form.address : "PICKUP",
             notes: form.notes,
             deliveryType: form.delivery ? "Delivery" : "Pickup",
             items: cart.map((item) => ({
-                product: item.name,   // product name
-                quantity: item.qty,   // how many
-                price: item.price     // price as string (₹12/pc)
+              product: item.name,
+              quantity: item.qty,
+              price: item.price,
             })),
-            totalAmount: cart.length, // number of different items
-            status: "pending"
-        };
+            totalAmount,
+          };
 
-        // Send to backend → saves to MongoDB
-        await placeOrder(orderData);
+          // Step 4: Send everything to OUR backend to verify the signature
+          await verifyPayment({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            orderData,
+          });
 
-        // Show success screen
-        setSuccess(true);
+          setSuccess(true);
+        } catch (err) {
+          alert("Payment succeeded but order saving failed. Contact support with your payment ID: " + response.razorpay_payment_id);
+        }
+      },
+      prefill: {
+        name: form.name,
+        contact: form.phone,
+      },
+      theme: { color: "#b8860b" },
+    };
 
-    } catch (error) {
-        alert("Failed to place order. Make sure backend is running!");
-    }
+    const rzp = new (window as any).Razorpay(options);
+    rzp.open();
+  } catch (error) {
+    alert("Failed to start payment. Make sure backend is running!");
+  }
 };
 
   if (success) {

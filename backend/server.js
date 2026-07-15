@@ -17,7 +17,8 @@ app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/contact',  require('./routes/contactRoutes'));
 app.use('/api/orders',   require('./routes/orderRoutes'));
 app.use('/api/users',    require('./routes/userRoutes'));
-app.use('/api/ai',       require('./routes/aiRoutes'));    // ← AI routes
+app.use('/api/ai',       require('./routes/aiRoutes'));  
+app.use('/api/payment', require('./routes/paymentRoutes'));  // ← Payment routes
 app.use(express.urlencoded({ extended: true })); // ← add this
 
 const PORT = process.env.PORT || 5000;
