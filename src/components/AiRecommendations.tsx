@@ -141,23 +141,7 @@ const AiRecommendations = () => {
     }
 
     // ── ERROR STATE ────────────────────────────────────────────
-    if (error) {
-        return (
-            <div className="rounded-2xl mb-8 p-5 flex items-center justify-between"
-                style={{
-                    background: "hsl(0 80% 95%)",
-                    border: "1px solid hsl(0 80% 85%)"
-                }}>
-                <p className="font-body text-sm text-red-700">{error}</p>
-                <button
-                    onClick={fetchRecommendations}
-                    className="flex items-center gap-1 font-body text-xs text-primary hover:underline ml-4"
-                >
-                    <RefreshCw className="w-3 h-3" /> Retry
-                </button>
-            </div>
-        );
-    }
+    if (error) return null;
 
     if (!data) return null;
 
