@@ -1,10 +1,13 @@
-const express = require('express');
-const cors = require('cors');
 const dotenv = require('dotenv');
+dotenv.config();
+
+const express = require('express');
+const redis = require("./src/config/redis");
+const cors = require('cors');
+
 const connectDB = require('./config/db');
 
-dotenv.config();   // load .env file
-connectDB();       // connect to MongoDB
+connectDB();
 
 const app = express();
 
@@ -25,3 +28,6 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`✅ Server running on port ${PORT}`);
 });
+redis.set("saini-test", "Redis is working!", { ex: 60 })
+    .then(() => console.log("✅ Redis Connected"))
+    .catch((err) => console.error("❌ Redis Error:", err.message));

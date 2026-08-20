@@ -1,12 +1,33 @@
 const Product = require('../models/Product');
 const { cloudinary } = require('../config/cloudinary');
+const redis = require('../src/config/redis');
 
 // GET all products
 const getProducts = async (req, res) => {
     try {
+        // 1. Check Redis first
+        const cachedProducts = await redis.get("products");
+
+        if (cachedProducts) {
+            console.log("✅ Redis Cache HIT");
+            return res.json(cachedProducts);
+        }
+
+        console.log("❌ Redis Cache MISS");
+
+        // 2. If not in Redis, get products from MongoDB
         const products = await Product.find();
+
+        // 3. Store products in Redis for 5 minutes
+        await redis.set("products", products, {
+            ex: 300
+        });
+
+        // 4. Send products to client
         res.json(products);
+
     } catch (error) {
+        console.error("Get Products Error:", error);
         res.status(500).json({ error: error.message });
     }
 };
