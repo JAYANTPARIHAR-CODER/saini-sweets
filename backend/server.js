@@ -28,6 +28,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`✅ Server running on port ${PORT}`);
 });
-redis.set("saini-test", "Redis is working!", { ex: 60 })
-    .then(() => console.log("✅ Redis Connected"))
-    .catch((err) => console.error("❌ Redis Error:", err.message));
